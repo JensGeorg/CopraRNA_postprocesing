@@ -147,6 +147,12 @@ ord<-clus$label
 
 ord2<-match(ord, gsub("\\..*","",colnames(out_table2)))
 
+
+
+
+clus$label<-nam2
+ 
+}
 out_table2<-out_table2[selection,]
 out_table2<-out_table2[,ord2]
 p_table<-p_table[selection,]
@@ -157,11 +163,6 @@ p_table<-p_table[,ord2]
 mRNA_table<-mRNA_table[,ord2]
 sRNA_table<-sRNA_table[,ord2]
 opt_sub_table<-opt_sub_table[,ord2]
-
-
-clus$label<-nam2
- 
-}
 colnames(out_table2)<-nam2
 #require(pheatmap)
 
