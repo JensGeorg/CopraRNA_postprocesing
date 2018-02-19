@@ -16,7 +16,7 @@ require(ComplexHeatmap)
 require(ape) 
 require(phangorn)
 
-selected_heatmap<-function(int_p_thres=0.35,int_p_thres2=0.5, sel="genelist.txt", select=T, clustering="ribosomal", consensus="overall", inputfile="CopraRNA2_final_all_ooi.csv", num=25,coprarna_reference_file="CopraRNA_available_organisms.txt", prefix="sRNA"){
+#selected_heatmap<-function(int_p_thres=0.35,int_p_thres2=0.5, sel="genelist.txt", select=T, clustering="ribosomal", consensus="overall", inputfile="CopraRNA2_final_all_ooi.csv", num=25,coprarna_reference_file="CopraRNA_available_organisms.txt", prefix="sRNA"){
 
 clus=TRUE
 load("heatmap_data.Rdata")
@@ -261,7 +261,7 @@ dev.off()
 
 
 }
-selected_heatmap(select=select, clustering=clustering, consensus=consensus, inputfile=inputfile, sel=sel, num=num, coprarna_reference_file=coprarna_reference_file,int_p_thres=int_p_thres, int_p_thres2=int_p_thres2,prefix=prefix)
+#selected_heatmap(select=select, clustering=clustering, consensus=consensus, inputfile=inputfile, sel=sel, num=num, coprarna_reference_file=coprarna_reference_file,int_p_thres=int_p_thres, int_p_thres2=int_p_thres2,prefix=prefix)
 
 
 
