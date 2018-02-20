@@ -33,7 +33,7 @@ selection<-evo_analysis[1:num,"initial_sorting"]
 
 
 
-evo_analysis<-evo_analysis[order(evo_analysis[,"initial_sorting"]),]
+evo_analysis<-read.csv("CopraRNA2_prep_anno_addhomologs_padj_amountsamp.csv",sep=",", header=T) 
 
 find_sRNA<-function(x, y){
 	e<-grep("Annotation", colnames(y))-1
