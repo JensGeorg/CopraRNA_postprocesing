@@ -1,6 +1,6 @@
 
 sel="genelist.txt" # case sensitve list of locus tags
-inputfile="CopraRNA2_final_all_ooi.csv"
+inputfile="CopraRNA2_final_all_ooi_ooiconsensus.csv"
 num=25
 consensus="overall" # alternative: "ooi"
 select=TRUE
