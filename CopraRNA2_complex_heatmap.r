@@ -201,7 +201,7 @@ ha = HeatmapAnnotation(
 							
 							)							
 
-pdf(nam,paper = "a4r", width = 0, height = 0,useDingbats=F) ## edit prw // onefile=FALSE fix for two page pdf
+pdf(nam, width = 2.3+ncol(out_table2)*0.2, height = 3.4+nrow(out_table2)*0.2,useDingbats=F) ## edit prw // onefile=FALSE fix for two page pdf
 
 a<-Heatmap(	out_table2,
 			
@@ -225,7 +225,7 @@ a<-Heatmap(	out_table2,
 				#rect_gp = gpar(col = "lightgrey", lty = 1, lwd = 0.15)
 				if(out_table2[i,j]!=7){
 					#print(c(width,height))
-					grid.circle(x = x-0.25*unit.c(width), y = y+0.25*unit.c(height), r = unit.c(width)*0.3, 
+					grid.circle(x = x-0.25*unit.c(width), y = y+0.25*unit.c(height), r = max(unit.c(width),unit.c(height))*0.18,  
 						gp = gpar(fill = col_fun((as.numeric(p_table[i, j]))), col = "grey",lwd=0.3))
 						
 					#
