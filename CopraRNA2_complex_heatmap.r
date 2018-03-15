@@ -1,9 +1,8 @@
-
 sel="genelist.txt" # case sensitve list of locus tags
 inputfile="CopraRNA2_final_all_ooi_ooiconsensus.csv"
 num=25
 consensus="overall" # alternative: "ooi"
-select=TRUE
+select=F
 clustering="ribosomal" # alternative: "ribosomal", "default"
 coprarna_reference_file="CopraRNA_available_organisms.txt"
 int_p_thres=0.35
@@ -15,7 +14,7 @@ prefix="sRNA"
 require(ComplexHeatmap)
 require(ape) 
 require(phangorn)
-
+require(seqinr)
 #selected_heatmap<-function(int_p_thres=0.35,int_p_thres2=0.5, sel="genelist.txt", select=T, clustering="ribosomal", consensus="overall", inputfile="CopraRNA2_final_all_ooi.csv", num=25,coprarna_reference_file="CopraRNA_available_organisms.txt", prefix="sRNA"){
 
 clus=TRUE
@@ -34,6 +33,58 @@ selection<-evo_analysis[1:num,"initial_sorting"]
 
 
 evo_analysis<-read.csv("CopraRNA2_prep_anno_addhomologs_padj_amountsamp.csv",sep=",", header=T) 
+
+
+as.hclust.phylo2 <- function(x, ...)
+{
+    if (!is.ultrametric(x)) stop("the tree is not ultrametric")
+    if (!is.binary.phylo(x)) stop("the tree is not binary")
+    if (!is.rooted(x)) stop("the tree is not rooted")
+    n <- length(x$tip.label)
+    x$node.label <- NULL # by Jinlong Zhang (2010-12-15)
+    bt <- branching.times(x)
+    N <- n - 1L
+
+    x <- reorder(x, "postorder")
+    m <- matrix(x$edge[, 2], N, 2, byrow = TRUE)
+    anc <- x$edge[c(TRUE, FALSE), 1]
+    bt <- bt[as.character(anc)] # 1st, reorder
+    ## 2nd, sort keeping the root branching time in last (in case of
+    ## rounding error if there zero-lengthed branches nead the root)
+    bt <- c(sort(bt[-N]), bt[N])
+    o <- match(names(bt), anc)
+    m <- m[o, ]
+
+    ## first renumber the tips:
+    TIPS <- m <= n
+    m[TIPS] <- -m[TIPS]
+
+    ## then renumber the nodes:
+    oldnodes <- as.numeric(names(bt))[-N]
+    m[match(oldnodes, m)] <- 1:(N - 1)
+
+    names(bt) <- NULL
+    obj <- list(merge = m, height = 2*bt, order = 1:n, labels = x$tip.label,
+                call = match.call(), method = "unknown")
+    class(obj) <- "hclust"
+    obj
+}
+
+mafft<-function(filename="ncrna.fa", outname="ncrna_aligned.fa", mode="accurate"){
+	if(mode=="accurate"){
+		command<-paste("mafft --maxiterate 1000 --localpair --quiet --inputorder ", filename, " > ", outname, sep="" )
+	}
+	
+	if(mode=="fast"){
+		command<-paste("mafft --retree 2 --maxiterate 0 --quiet --inputorder ", filename, " > ", outname, sep="" )
+	}
+	if(mode=="very_fast"){
+		command<-paste("mafft --retree 1 --maxiterate 0 --quiet --inputorder ", filename, " > ", outname, sep="" )
+	}
+	system(command)
+	#fas<-read.fasta(outname)
+	#fas
+} 
 
 find_sRNA<-function(x, y){
 	e<-grep("Annotation", colnames(y))-1
@@ -134,14 +185,58 @@ ord2<-match(ord, gsub("\\..*","",colnames(out_table2)))
 clus$label<-nam2
 }
 if(clustering=="ribosomal"){
-d<-read.delim("distmat.out", sep="\t", skip=6, header=FALSE)
- dd<-d[2:nrow(d),2:(ncol(d)-2)]
- rownames(dd)<-gsub(" .*","",d[2:nrow(d),ncol(d)])
-colnames(dd)<-gsub(" .*","",d[2:nrow(d),ncol(d)])
- dis<-as.dist(t(dd))
+
+	# rRNA<-matrix(,nrow(coor2),2)
+
+		# con <- dbConnect(SQLite(), dbname="/home/jens/jensSicherung/Paper und Drafts/GLASSgo/SILVA_132_SSUParc_tax_silva.fasta/rRNA.db", ":memory:")
+		# # #rRNA_data <- dbReadTable(con, 'rRNA_data')
+		# # ids<-rRNA_data[,1]
+		# # dbWriteTable(con, "IDs",ids)
+		# #
+		# for(j in 1:nrow(coor2)){
+		# #for(i in 1:2){
+			# temp<-gsub("\\..*","",coor2[j,1])
+			# temp<-paste("SELECT sequence   FROM rRNA_data WHERE ID == '", temp,"'",sep="")
+			# #print(temp)
+			# temp<-dbGetQuery(con,temp )
+			# #print(temp)
+			# rRNA[j,2]<-as.character(temp[1,1])
+			# #dbClearResult(temp)
+			# rRNA[j,1]<-coor2[j,"fin"]
+		# }
+
+		# dbDisconnect(con)
+
+		# fasta<-c()
+		# for(j in 1:nrow(rRNA)){
+			# fasta<-c(fasta,paste(">", rRNA[j,1], sep=""),gsub("u","t",rRNA[j,2]))
+
+		
+
+		# write.table(fasta, file="16s.fasta", row.names=F, col.names=F, quote=F)
+
+
+		mafft(filename="16s_sequences.fa")
+		
+	
+	tempf<-read.fasta("ncrna_aligned.fa")
+	write.fasta(tempf, file.out="ncrna_aligned.fa", names=names(tempf), nbchar=100000)
+	dat<-read.phyDat("ncrna_aligned.fa", format="fasta", type="DNA")
+	dm <- dist.ml(dat, model="F81")
+	treeNJ <- NJ(dm)
+	fitJC = pml(treeNJ, data=dat)
+	fit2<-chronos(fitJC$tree)
+	clus<-as.hclust.phylo2(midpoint(fit2))
+
+
+# d<-read.delim("distmat.out", sep="\t", skip=6, header=FALSE)
+ # dd<-d[2:nrow(d),2:(ncol(d)-2)]
+ # rownames(dd)<-gsub(" .*","",d[2:nrow(d),ncol(d)])
+# colnames(dd)<-gsub(" .*","",d[2:nrow(d),ncol(d)])
+ # dis<-as.dist(t(dd))
  
  
- clus<-(hclust(dis,method="average"))
+ # clus<-(hclust(dis,method="average"))
 
 ord<-clus$label
 
@@ -262,7 +357,4 @@ dev.off()
 
 #}
 #selected_heatmap(select=select, clustering=clustering, consensus=consensus, inputfile=inputfile, sel=sel, num=num, coprarna_reference_file=coprarna_reference_file,int_p_thres=int_p_thres, int_p_thres2=int_p_thres2,prefix=prefix)
-
-
-
 
