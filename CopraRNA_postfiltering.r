@@ -36,3 +36,9 @@ for(i in 1:length(dat)){
 }
 
 
+for(i in 1:length(dat)){
+	nam<-paste(nam1[i],"_filtered.csv",sep="")
+	write.table( dat[[i]],file=nam ,sep=",", col.names=F)
+
+
+}
