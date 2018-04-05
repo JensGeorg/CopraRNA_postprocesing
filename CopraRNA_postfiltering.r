@@ -11,7 +11,7 @@ ooi<-read.csv("CopraRNA2_final_all_ooi.csv", sep=",")
 ooi_cons<-read.csv("CopraRNA2_final_all_ooi_ooiconsensus.csv",sep=",")
 bal<-read.csv("CopraRNA2_final_all_balanced.csv", sep=",")
 bal_cons<-read.csv("CopraRNA2_final_all_balanced_consensus.csv", sep=",")
-
+nam1<-c("ooi_filtered","ooi_cons_filtered","all_filtered","all_cons_filtered")
 dat<-list(ooi,ooi_cons,bal,bal_cons)
 neg<-which(out_table2[,1]>4)
 for(i in 1:length(dat)){
