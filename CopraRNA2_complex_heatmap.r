@@ -226,7 +226,9 @@ if(clustering=="ribosomal"){
 	treeNJ <- NJ(dm)
 	fitJC = pml(treeNJ, data=dat)
 	fit2<-chronos(fitJC$tree)
-	clus<-as.hclust.phylo2(midpoint(fit2))
+	fit2<-midpoint(fit2)
+	clus<-as.hclust.phylo2((fit2))
+	#clus<-hclust(as.dist(dm))
 
 
 # d<-read.delim("distmat.out", sep="\t", skip=6, header=FALSE)
@@ -245,7 +247,7 @@ ord2<-match(ord, gsub("\\..*","",colnames(out_table2)))
 
 
 
-clus$label<-nam2
+#clus$label<-nam2
  
 }
 out_table2<-out_table2[selection,]
@@ -258,7 +260,7 @@ p_table<-p_table[,ord2]
 mRNA_table<-mRNA_table[,ord2]
 sRNA_table<-sRNA_table[,ord2]
 opt_sub_table<-opt_sub_table[,ord2]
-colnames(out_table2)<-nam2
+colnames(out_table2)<-nam2[ord2]
 #require(pheatmap)
 
 my_palette<-colorRampPalette(c("olivedrab2","olivedrab3","goldenrod1","orange","orangered2","orangered3","white"))(n=7)
